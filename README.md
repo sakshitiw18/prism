@@ -1,5 +1,4 @@
-<h1 align="center">Prism</h1>
-
+<h1 align="center">Prism: Vision-Language RAG Pipeline</h1>
 <p align="center">
   <b>Vision-first RAG for documents: retrieve and answer over pages as images, not just extracted text.</b>
 </p>
@@ -10,10 +9,6 @@
   <img src="https://img.shields.io/badge/vector%20store-LanceDB-orange.svg" alt="LanceDB">
   <img src="https://img.shields.io/badge/retrieval-ColPali%20%7C%20JinaCLIP-green.svg" alt="ColPali and JinaCLIP">
 </p>
-
-<!-- Add a short demo GIF or screenshot here: ![Prism demo](docs/assets/demo.gif) -->
-
----
 
 ## Overview
 
@@ -51,47 +46,39 @@ flowchart LR
 ## Retrieval Techniques
 
 | Technique | How it works | Best for |
-|---|---|---|
+| :--- | :--- | :--- |
 | **Simple RAG** | Extracts text with OCR (Docling), indexes passages, and matches queries to text chunks. | Text-heavy documents: contracts, books, papers |
 | **Vision RAG** | Encodes text and images into a shared space with JinaCLIP, so images can be searched alongside text. | Figures, diagrams, product imagery |
 | **ColPali RAG** | Embeds whole pages as images with PaliGemma and scores with ColBERT-style late interaction (token-level matching against page patches). | Tables, infographics, complex layouts |
 | **Hybrid ColPali RAG** | Retrieves top-k pages with image embeddings, then reranks them with ColPali late interaction. | Mixed visual and text content where both accuracy and speed matter |
 
 <details>
-<summary>More detail on each technique</summary>
+<summary><b>More detail on each technique</b></summary>
 
-**Simple RAG.** Optical Character Recognition through Docling makes scanned PDFs and images searchable. Extracted text is indexed so queries can be matched to relevant passages, giving a strong baseline for grounded generation.
-
-**Vision RAG.** A cross-modal embedding model (JinaCLIP) maps text and images into one vector space, enabling similarity search across modalities. Useful when visual components matter as much as the text.
-
-**ColPali RAG.** Pages are embedded directly as images, so layout and visual elements become part of retrieval. Late interaction enables token-level matching between query tokens and document patches, keeping accuracy high at reasonable indexing and query speeds.
-
-**Hybrid ColPali RAG.** A coarse first pass using image embeddings narrows the candidate pages, and a second pass reranks them with ColPali. This combines the speed of single-vector search with the precision of late interaction.
-
+- **Simple RAG:** Optical Character Recognition through Docling makes scanned PDFs and images searchable. Extracted text is indexed so queries can be matched to relevant passages, giving a strong baseline for grounded generation.
+- **Vision RAG:** A cross-modal embedding model (JinaCLIP) maps text and images into one vector space, enabling similarity search across modalities. Useful when visual components matter as much as the text.
+- **ColPali RAG:** Pages are embedded directly as images, so layout and visual elements become part of retrieval. Late interaction enables token-level matching between query tokens and document patches, keeping accuracy high at reasonable indexing and query speeds.
+- **Hybrid ColPali RAG:** A coarse first pass using image embeddings narrows the candidate pages, and a second pass reranks them with ColPali. This combines the speed of single-vector search with the precision of late interaction.
 </details>
 
 ## Quickstart
 
 ### 1. Clone
-
 ```bash
 git clone https://github.com/sakshitiw18/prism
 cd prism
 ```
 
 ### 2. Create an environment
-
 ```bash
 conda create -n prism-venv python=3.10
 conda activate prism-venv
 ```
 
 ### 3. Install
-
 ```bash
 pip install -e .
-# or
-poetry install
+# or poetry install
 
 # optional: OCR dependencies
 pip install -e ".[ocr]"
@@ -102,46 +89,40 @@ pip install -e ".[ocr]"
 Every technique is a class with the same interface:
 
 ```python
-from prism.rag import ColpaliRAG  # or SimpleRAG, VisionRAG, HybridColpaliRAG
+from prism.rag import ColpaliRAG # or SimpleRAG, VisionRAG, HybridColpaliRAG
 
 rag = ColpaliRAG()
-
 rag.index(
-    "/path/to/documents",
-    # technique-specific options
+    "/path/to/documents", # technique-specific options
 )
 
 results = rag.search("What was Q3 revenue by region?", top_k=5)
-
 # Pass `results` to the LLM / VLM of your choice for answer generation
 ```
 
 ## Interactive Playground
 
 Compare techniques from ingestion to retrieval in a Gradio interface:
-
 ```bash
 python demo.py --share
 ```
-
 Or run it in [Google Colab](https://colab.research.google.com/github/sakshitiw18/prism/blob/main/docs/demo.ipynb).
 
 ## Examples and Notebooks
 
 | Technique | Notebook | Script |
-|---|---|---|
-| Simple RAG | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/sakshitiw18/prism/blob/main/docs/simpleRAG.ipynb) | [`textDemo.py`](examples/textDemo.py) |
-| Vision RAG | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/sakshitiw18/prism/blob/main/docs/visionRAG.ipynb) | [`visionDemo.py`](examples/visionDemo.py) |
-| ColPali RAG | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/sakshitiw18/prism/blob/main/docs/colpaliRAG.ipynb) | [`colpaliDemo.py`](examples/colpaliDemo.py) |
-| Hybrid ColPali RAG | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/sakshitiw18/prism/blob/main/docs/hybridColpaliRAG.ipynb) | [`hybridColpaliDemo.py`](examples/hybridColpaliDemo.py) |
+| :--- | :--- | :--- |
+| **Simple RAG** | [Colab](https://colab.research.google.com/github/sakshitiw18/prism/blob/main/docs/simpleRAG.ipynb) | [textDemo.py](examples/textDemo.py) |
+| **Vision RAG** | [Colab](https://colab.research.google.com/github/sakshitiw18/prism/blob/main/docs/visionRAG.ipynb) | [visionDemo.py](examples/visionDemo.py) |
+| **ColPali RAG** | [Colab](https://colab.research.google.com/github/sakshitiw18/prism/blob/main/docs/colpaliRAG.ipynb) | [colpaliDemo.py](examples/colpaliDemo.py) |
+| **Hybrid ColPali RAG** | [Colab](https://colab.research.google.com/github/sakshitiw18/prism/blob/main/docs/hybridColpaliRAG.ipynb) | [hybridColpaliDemo.py](examples/hybridColpaliDemo.py) |
 
 ## ColPali Interpretability
 
 Prism includes tooling to inspect how ColPali scores a page for a query:
-
-- **Token-level analysis**: how each query token contributes to retrieval
-- **Similarity heatmaps**: where on the page the model "looks"
-- **Model comparison**: side-by-side analysis of ColPali variants
+- **Token-level analysis:** how each query token contributes to retrieval
+- **Similarity heatmaps:** where on the page the model "looks"
+- **Model comparison:** side-by-side analysis of ColPali variants
 - **Gradio interface** for interactive exploration
 
 ```bash
@@ -161,19 +142,18 @@ python -m modal run examples/inference_colpali/modal_demo_heatmaps_comparing_col
 ```
 
 | Capability | Detail |
-|---|---|
-| GPU | Automatic L4 provisioning |
-| Model caching | Persistent volume for fast cold starts |
-| Memory | Tuned for T4/L4 constraints |
-| Scaling | Pay-per-use, scales to zero |
-| Access | Shareable Gradio URL |
+| :--- | :--- |
+| **GPU** | Automatic L4 provisioning |
+| **Model caching** | Persistent volume for fast cold starts |
+| **Memory** | Tuned for T4/L4 constraints |
+| **Scaling** | Pay-per-use, scales to zero |
+| **Access** | Shareable Gradio URL |
 
-**Environment variables** (in a `.env` file):
-
+Environment variables (in a `.env` file):
 ```bash
 GEMINI_API_KEY=your_gemini_api_key
-OPENAI_API_KEY=your_openai_api_key   # optional
-HF_TOKEN=your_huggingface_token      # set in Modal secrets
+OPENAI_API_KEY=your_openai_api_key  # optional
+HF_TOKEN=your_huggingface_token     # set in Modal secrets
 ```
 
 ## Design Notes
@@ -194,10 +174,10 @@ Contributions are welcome. Open an issue to discuss a change, then submit a pull
 ## Acknowledgments
 
 Prism builds on the work of many open-source projects:
-
 - [Docling](https://github.com/DS4SD/docling) for PDF text extraction and OCR
 - [LanceDB](https://lancedb.com/) for vector storage
 - [Byaldi](https://github.com/AnswerDotAI/byaldi) and [RAGatouille](https://github.com/AnswerDotAI/RAGatouille) for design inspiration
+- [Vision Retrieval by Kyryl](https://github.com/kyryl-opens-ml/vision-retrieval), [Vision Retrieval by AyushExel](https://github.com/AyushExel/vision-retrieval), and [The Rise of Vision-Driven Document Retrieval for RAG](https://blog.vespa.ai/the-rise-of-vision-driven-document-retrieval-for-rag/) for ColPali implementation references
 
 ## Citation
 
@@ -205,12 +185,12 @@ If you use ColPali-based retrieval, please cite the original paper:
 
 ```bibtex
 @misc{faysse2024colpaliefficientdocumentretrieval,
-      title={ColPali: Efficient Document Retrieval with Vision Language Models},
-      author={Manuel Faysse and Hugues Sibille and Tony Wu and Bilel Omrani and Gautier Viaud and Céline Hudelot and Pierre Colombo},
-      year={2024},
-      eprint={2407.01449},
-      archivePrefix={arXiv},
-      primaryClass={cs.IR},
-      url={https://arxiv.org/abs/2407.01449},
+  title={ColPali: Efficient Document Retrieval with Vision Language Models},
+  author={Manuel Faysse and Hugues Sibille and Tony Wu and Bilel Omrani and Gautier Viaud and Céline Hudelot and Pierre Colombo},
+  year={2024},
+  eprint={2407.01449},
+  archivePrefix={arXiv},
+  primaryClass={cs.IR},
+  url={https://arxiv.org/abs/2407.01449},
 }
 ```
